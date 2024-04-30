@@ -1,0 +1,132 @@
+---
+title: "Pertemuan 6"
+author: "Sausan"
+date: "2024-04-05"
+output: html_document
+---
+
+## Model ARMA (1,1)
+```{r}
+library(astsa)
+set.seed(234)
+xt = arima.sim(n = 2000, list(ar = c(0.7), ma = c(0.2)))
+head(xt)
+```
+
+## Melihat Nilai Mean dan Variansi
+```{r}
+mean(xt)
+var(xt)
+```
+Pada output di atas diperoleh nilai mean sebesar -0.03502061 dan variansi sebesar 2.520455.
+
+## Plot ACF dan PACF
+```{r}
+acf2(xt)
+```
+Pada output di atas terlihat bahwa plot ACF & PACF secara bertahap menurun menuju nol setelah lag 1. Jadi, dapat disimpulkan bahwa data tersebut memenuhi kriteria ARMA(1,1).
+
+## Modelling
+```{r}
+mod = arima(xt, order = c(1, 0, 1))
+mod
+```
+Terlihat bahwa :
+
+- Nilai rata-rata hasil fitting = -0.0343
+- Nilai rata-rata sebenarnya = -0.03502061
+- Nilai slope hasil fitting ar1 = 0.7067
+- Nilai slope hasil fitting ma1 = 0.1831
+- Est white noise = 0.9746
+
+Terlihat bahwa nilai rata-rata fitting dan nilai rata-rata sebenarnya tidak jauh berbeda. Jadi, dapat dikatakan model ARMA(1, 1) mendekati nilai aslinya baik nilai rata-rata dan nilai slope nya.
+
+## Prediksi
+```{r}
+predict(mod, n.ahead = 12)$pred
+```
+Pada output di atas terlihat hasil prediksi untuk model ARMA(1,1).
+
+## Model ARMA (2,1)
+```{r}
+set.seed(234)
+xt1 = arima.sim(n = 2000, list(ar = c(0.6, -0.2), ma = c(0.4)))
+head(xt1)
+```
+
+## Melihat Nilai Mean dan Variansi
+```{r}
+mean(xt1)
+var(xt1)
+```
+Pada output di atas diperoleh nilai mean sebesar -0.01612304 dan variansi sebesar 2.069953.
+
+## Plot ACF dan PACF
+```{r}
+acf2(xt1)
+```
+Pada output di atas terlihat bahwa plot ACF secara bertahap menurun menuju nol, sedangkan plot PACF menunjukkan beberapa nilai yang cukup signifikan pada jarak waktu tertentu, diikuti oleh penurunan menuju nol. Jadi, dapat disimpulkan bahwa data tersebut memenuhi kriteria ARMA(2,1).
+
+## Modelling
+```{r}
+mod1 = arima(xt1, order = c(2, 0, 1))
+mod1
+```
+Terlihat bahwa :
+
+- Nilai rata-rata hasil fitting = -0.0163
+- Nilai rata-rata sebenarnya = -0.01612304
+- Nilai slope hasil fitting ar1 = 0.5637
+- Nilai slope hasil fitting ar2 = -0.1749
+- Nilai slope hasil fitting ma1 = 0.4241
+- Est white noise = 0.9723
+
+Terlihat bahwa nilai rata-rata fitting dan nilai rata-rata sebenarnya tidak jauh berbeda. Jadi, dapat dikatakan model ARMA(2, 1) mendekati nilai aslinya baik nilai rata-rata dan nilai slope nya.
+
+## Prediksi
+```{r}
+predict(mod1, n.ahead = 12)$pred
+```
+Pada output di atas terlihat hasil prediksi untuk model ARMA(2,1).
+
+## Model ARMA (1,2)
+```{r}
+set.seed(234)
+xt2 = arima.sim(n = 2000, list(ar = c(0.8), ma = c(0.7, -0.6)))
+head(xt2)
+```
+
+## Melihat Nilai Mean dan Variansi
+```{r}
+mean(xt2)
+var(xt2)
+```
+Pada output di atas diperoleh nilai mean sebesar -0.0411081 dan variansi sebesar 4.182878.
+
+## Plot ACF dan PACF
+```{r}
+acf2(xt2)
+```
+Pada output di atas terlihat bahwa plot ACF secara bertahap menurun menuju nol, sedangkan plot PACF menunjukkan pola yang berfluktuasi, dengan beberapa nilai signifikan di beberapa lag tertentu, tetapi juga dengan beberapa nilai yang tidak signifikan atau mendekati nol di beberapa lag lainnya. Jadi, dapat disimpulkan bahwa data tersebut dapat memenuhi kriteria ARMA(1,2).
+
+## Modelling
+```{r}
+mod2 = arima(xt2, order = c(1, 0, 2))
+mod2
+```
+Terlihat bahwa :
+
+- Nilai rata-rata hasil fitting = -0.0366
+- Nilai rata-rata sebenarnya = -0.0411081
+- Nilai slope hasil fitting ar1 = 0.8356
+- Nilai slope hasil fitting ma1 = 0.2806
+- Nilai slope hasil fitting ma2 = -0.4685
+- Est white noise = 1.41
+
+Terlihat perbedaan yang signifikan antara nilai rata-rata fitting dan nilai rata-rata sebenarnya. Jadi, dapat dikatakan model ARMA(1, 2) tidak mendekati nilai aslinya baik nilai rata-rata dan nilai slope nya.
+
+## Prediksi
+```{r}
+predict(mod2, n.ahead = 12)$pred
+```
+Pada output di atas terlihat hasil prediksi untuk model ARMA(1,2).

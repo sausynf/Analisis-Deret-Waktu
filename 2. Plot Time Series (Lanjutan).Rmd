@@ -1,0 +1,103 @@
+---
+title: "Pertemuan 3"
+author: "Sausan"
+date: "2024-03-15"
+output: html_document
+---
+
+## Read Dataset
+```{r}
+library(datasets)
+help("datasets")
+
+data("AirPassangers")
+AP = AirPassengers
+AP
+```
+
+## EDA
+```{r}
+# Melihat Objek Data
+class(AP)
+# Melihat informasi spesifik tentang objek time series
+start(AP); end(AP); frequency(AP)
+```
+
+Objek data tersebut adalah Time Series. Waktu pertama dalam data time series (AP) adalah Januari (bulan 1) tahun 1949 dan waktu terakhir adalah Desember (bulan 12) tahun 1960. Frekuensi pengamatan adalah bulanan (dalam hal ini, 12 pengamatan per tahun).
+
+## Plot Time Series
+```{r}
+plot.ts(AP, ylab="Penumpang Pesawat", xlab="Tahun")
+```
+
+Dapat terlihat pada plot di atas bahwa data penumpang pesawat tersebut cenderung naik dari tahun ke tahun.
+
+## Plot Agregasi
+```{r}
+layout(1:2)
+plot(aggregate(AP))
+boxplot(AP~cycle(AP))
+```
+
+Dapat terlihat pada output plot line di atas bahwa data penumpang pesawat tersebut cenderung naik dari tahun ke tahun dengan nilai terendah terdapat pada tahun 1949 dan nilai tertinggi terdapat pada tahun 1960. Lalu pada output plot boxplot di atas terlihat bahwa data tersebut tidak terdapat outlier.
+
+## Read Data dan Melihat Ringkasan Data
+```{r}
+#Import Library
+library(timeSeries)
+library(xts)
+#Read Data
+data = LPP2005REC
+#Melihat Ringkasan Data
+summary(data)
+```
+
+Pada output di atas terlihat data penutupan harian untuk beberapa saham pada tahun 2005. Terlihat pula ringkasan dari data tersebut.
+
+## Membuat Variabel
+```{r}
+ts1 = 100 * cumulated(data[, 1])
+ts2 = 100 * cumulated(data[, 1:2])
+ts3 = 100 * cumulated(data[, 1:3])
+ts6 = 100 * cumulated(data[, 1:6])
+```
+
+Setiap variabel time series diubah menjadi nilai persentase dengan mengalikan hasil kumulatif dengan 100.
+
+## Univariate Single Plot
+```{r}
+par(mfrow=c(1, 1))
+plot.ts(ts1)
+```
+
+## Multivariate Plots
+```{r}
+colors = c("red", "green", "blue")
+par(mfrow=c(1, 1))
+plot.ts(ts3, plot.type ="s", col=colors)
+
+#Menambahkan Legend 
+legend("topleft", legend=colnames(data)[1:3], col=colors,lty=1, cex=0.6)
+```
+
+## Multiple Plots
+```{r}
+par(mfrow=c(1, 1))
+plot(ts3, plot.type ="m", col=colors)
+
+par(mfrow=c(1, 1))
+plot(ts6, plot.type ="m", col=colors)
+```
+
+## Combining Single Plot
+```{r}
+#Variabel Pertama
+par(mfrow=c(2, 1))
+par(mar = c(bottom=1.5, 5.1, top=4, 2.1))
+plot(ts2[, 1], col="green")
+
+#Variabel Kedua
+par(mar = c(bottom=4, 5.1, top=1.5, 2.1))
+plot(ts2[, 2], col="red")
+```
+

@@ -1,0 +1,128 @@
+---
+title: "Pertemuan 5"
+author: "Sausan"
+date: "2024-03-30"
+output: html_document
+---
+
+## Model AR(1)
+```{r}
+library(astsa)
+set.seed(2)
+xt = arima.sim(n = 2000, list(ar=c(0.9)))
+head(xt)
+```
+
+## Melihat Nilai Mean dan Variansi
+```{r}
+mean(xt)
+var(xt)
+```
+Pada output di atas diperoleh nilai mean sebesar 0.421265 dan variansi sebesar 5.881657.
+
+## Plot ACF dan PACF
+```{r}
+acf2(xt)
+```
+Pada output di atas terlihat bahwa plot ACF menurun secara perlahan, sedangkan plot PACF putus setelah lag 1. Jadi, dapat disimpulkan bahwa model yang cocok untuk data tersebut adalah model autoregresif AR(1).
+
+## Modelling
+```{r}
+mod = arima(xt, order = c(1, 0, 0))
+mod
+```
+Terlihat bahwa :
+
+- Nilai rata-rata hasil fitting = 0.4198
+- Nilai rata-rata sebenarnya = 0.421265
+- Nilai slope hasil fitting = 0.9094
+- Est white noise = 1.012
+
+Terlihat bahwa nilai rata-rata fitting dan nilai rata-rata sebenarnya tidak jauh berbeda. Jadi, dapat dikatakan model AR(1) mendekati nilai aslinya baik nilai rata-rata dan nilai slope nya.
+
+## Prediksi
+```{r}
+predict(mod, n.ahead = 12)$pred
+```
+Pada output di atas terlihat hasil prediksi untuk model AR(1).
+
+## Model MA(1)
+```{r}
+set.seed(2)
+xt1 = arima.sim(n = 2000, list(ma = c(0.9)))
+head(xt1)
+```
+
+## Melihat Nilai Mean dan Variansi
+```{r}
+mean(xt1)
+var(xt1)
+```
+Pada output di atas diperoleh nilai mean sebesar 0.0783683 dan variansi sebesar 1.833028.
+
+## Plot ACF dan PACF
+```{r}
+acf2(xt1)
+```
+Pada output di atas terlihat bahwa plot ACF secara bertahap menurun menuju nol, sedangkan plot PACF putus setelah lag 1. Jadi, dapat disimpulkan bahwa model yang cocok untuk data tersebut adalah model moving average MA(1).
+
+## Modelling
+```{r}
+mod1 = arima(xt1, order = c(0, 0, 1))
+mod1
+```
+Terlihat bahwa :
+
+- Nilai rata-rata hasil fitting = 0.0767
+- Nilai rata-rata sebenarnya = 0.0783683
+- Nilai slope hasil fitting = 0.8832
+- Est white noise = 1.008
+
+Terlihat bahwa nilai rata-rata fitting dan nilai rata-rata sebenarnya tidak jauh berbeda. Jadi, dapat dikatakan model MA(1) mendekati nilai aslinya baik nilai rata-rata dan nilai slope nya.
+
+## Prediksi
+```{r}
+predict(mod1, n.ahead = 12)$pred
+```
+Pada output di atas terlihat hasil prediksi untuk model MA(1).
+
+## Model MA(2)
+```{r}
+set.seed(2)
+xt2 = arima.sim(n = 2000, list(ma = c(0.7, 0.8)))
+head(xt2)
+```
+
+## Melihat Nilai Mean dan Variansi
+```{r}
+mean(xt2)
+var(xt2)
+```
+Pada output di atas diperoleh nilai mean sebesar 0.1034789 dan variansi sebesar 2.223293.
+
+## Plot ACF dan PACF
+```{r}
+acf2(xt2)
+```
+Pada output di atas terlihat bahwa plot ACF secara bertahap menurun menuju nol, sedangkan plot PACF putus setelah lag 2. Jadi, dapat disimpulkan bahwa model yang cocok untuk data tersebut adalah model moving average MA(2).
+
+## Modelling
+```{r}
+mod2 = arima(xt2, order = c(0, 0, 2))
+mod2
+```
+Terlihat bahwa :
+
+- Nilai rata-rata hasil fitting = 0.1038
+- Nilai rata-rata sebenarnya = 0.1034789
+- Nilai slope hasil fitting ma1 = 0.7069
+- Nilai slope hasil fitting ma2 = 0.8086
+- Est white noise = 1.009
+
+Terlihat bahwa nilai rata-rata fitting dan nilai rata-rata sebenarnya tidak jauh berbeda. Nilai slope hasil fitting untuk model MA(2) lebih tinggi daripada nilai slope untuk model MA(1), menunjukkan bahwa model MA(2) memiliki efek yang lebih besar dari nilai observasi sebelumnya. 
+
+## Prediksi
+```{r}
+predict(mod2, n.ahead = 12)$pred
+```
+Pada output di atas terlihat hasil prediksi untuk model MA(2).

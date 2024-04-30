@@ -1,0 +1,74 @@
+---
+title: "Pertemuan 4"
+author: "Sausan"
+date: "2024-03-22"
+output: html_document
+---
+
+## Import Dataset
+```{r}
+library(readxl)
+BBNIJK <- read_excel("C:/Users/LENOVO/Documents/SMT 6/Analisis Time Series/PRAK/BBNI.JK.xlsx")
+BBNIJK
+```
+
+## Preprocessing Data
+```{r}
+#Melihat dimensi data
+dim(BBNIJK)
+
+#Melihat struktur dataset
+str(BBNIJK)
+
+#Mengecek missing value data
+sapply(BBNIJK, function (x) sum(is.na(x)))
+
+#visualisasi missing value
+library("visdat")
+vis_miss(BBNIJK)
+```
+
+## EDA
+```{r}
+#Analisis Deskriptif
+summary(BBNIJK)
+
+#Ambil Data
+Close <- ts(BBNIJK[,5])
+Close
+```
+
+## Plot Time Series
+```{r}
+plot.ts(Close)
+```
+
+## Kesimpulan Plot Time Series
+Dari gambar di atas dapat diketahui bahwa perkembangan harga saham dalam 4 tahun terakhir cukup fluktuatif. Harga saham mulai terjadi kenaikan pada bulan Januari tahun 2018. 
+Maksud fluktuatif mengindikasikan adanya variasi/perubahan yang signifikan dalam harga saham dari waktu ke waktu. 
+Sehingga dapat disimpulkan bahwa harga saham telah mengalami perubahan yang signifikan selama periode 4 tahun terakhir tanpa memberikan detail spesifik tentang arah/pola fluktuasi tersebut.
+
+## Uji Stationeritas
+```{r}
+#Import Library Yang Dibutuhkan
+library(astsa)
+library(tseries)
+library(forecast)
+library(TSA)
+
+#Cek Stationeritas Terhadap Ragam
+bc = BoxCox.lambda(Close)
+bc
+
+#Cek Stasioneritas Terhadap Rata-Rata/Rataan
+adf.test(Close)
+```
+
+Pada output diatas terlihat hasil nilai λ menunjukkan angka 0.7900636 (Jauh dari 1). Jadi dapat disimpulkan bahwa data tersebut tidak stasioner secara ragam. Lalu pada uji ADF diperoleh p-values lebih besar dari nilai α (0,7255>0,05) sehingga H0 diterima yang berarti data tidak stationer secara varians. 
+
+## Plot ACF dan PACF
+```{r}
+acf2(Close)
+```
+
+Pada output diatas terlihat plot ACF dan PACF berdasarkan data Close. Pada plot di atas terlihat bahwa data belum stasioner.
