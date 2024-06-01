@@ -1,0 +1,97 @@
+---
+title: "Pertemuan 9"
+author: "Sausan"
+date: "2024-05-22"
+output: html_document
+---
+
+## Import Library Yang Dibutuhkan
+```{r}
+library(astsa)
+library(tseries)
+library(forecast)
+library(TSA)
+```
+
+## Import Dataset
+```{r}
+library(readxl)
+BBNIJK <- read_excel("C:/Users/LENOVO/Documents/SMT 6/Analisis Time Series/PRAK/BBNI.JK.xlsx")
+BBNIJK
+```
+
+## EDA
+```{r}
+#Ambil Data
+Close <- ts(BBNIJK[,5])
+head(Close)
+```
+
+## Melakukan differencing 1 terhadap data
+```{r}
+diff1.Close = diff(Close)
+plot.ts(diff1.Close)
+```
+
+Pada output diatas terlihat plot pada differencing 1 berdasarkan data Close. Pada plot di atas terlihat bahwa data masih belum stasioner karena masih terlihat fluktuatif.
+
+## Memanggil lag yang terpilih (Differencing 2 kali)
+```{r}
+diff2.Close = diff(diff1.Close)
+plot.ts(diff2.Close)
+acf2(diff2.Close)
+```
+
+Pada output diatas terlihat plot pada differencing 2 berdasarkan data differencing 1. Pada plot di atas terlihat bahwa data mengalami lonjakan naik turun yang cukup besar.
+
+## EACF
+```{r}
+library(TSA)
+eacf(diff2.Close)
+```
+
+## Kandidat Model
+## 1. ARIMA (0,2,1)
+```{r}
+Close.ARIMA.2.1 = arima(Close, order = c(0,2,1))
+Close.ARIMA.2.1
+```
+
+## Kandidat Model
+## 2. ARIMA (1,2,2)
+```{r}
+Close.ARIMA1.2.2 = arima(Close, order = c(1,2,2))
+Close.ARIMA1.2.2
+```
+
+## Kandidat Model
+## 3. ARIMA (2,2,3)
+```{r}
+Close.ARIMA2.2.3 = arima(Close, order = c(2,2,3))
+Close.ARIMA2.2.3
+```
+
+## Kandidat Model
+## 4. ARIMA (1,2,1)
+```{r}
+Close.ARIMA1.2.1 = arima(Close, order = c(1,2,1))
+Close.ARIMA1.2.1
+```
+
+## Kandidat Model
+## 5. ARIMA (0,2,2)
+```{r}
+Close.ARIMA0.2.2 = arima(Close, order = c(0,2,2))
+Close.ARIMA0.2.2
+```
+
+## Interpretasi Output Kandidat Model ARIMA
+Akaike Information Criterion (AIC) digunakan untuk membandingkan seberapa baik beberapa model statistik. Semakin rendah nilai AIC, semakin baik modelnya. Berdasarkan output di atas, terlihat bahwa nilai AIC untuk :
+
+* Model ARIMA pertama (0,2,1) adalah 13598.38
+* Model ARIMA kedua (1,2,2) adalah 13600.79
+* Model ARIMA ketiga (2,2,3) adalah 13596.13
+* Model ARIMA keempat (1,2,1) adalah 13599.49 
+* Model ARIMA kelima (0,2,2) adalah 13599.45 
+
+Berdasarkan kriteria AIC, **model ARIMA (2,2,3)** dipilih sebagai yang terbaik karena memiliki nilai AIC terendah, yaitu 13596.13.

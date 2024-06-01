@@ -1,0 +1,167 @@
+---
+title: "Pertemuan 10"
+author: "Sausan"
+date: "2024-05-24"
+output: html_document
+---
+
+## Import Library Yang Dibutuhkan
+```{r}
+library(astsa)
+library(tseries)
+library(forecast)
+library(TSA)
+```
+
+## Import Dataset
+```{r}
+library(readxl)
+BBNIJK <- read_excel("C:/Users/LENOVO/Documents/SMT 6/Analisis Time Series/PRAK/BBNI.JK.xlsx")
+BBNIJK
+```
+
+## EDA
+```{r}
+#Ambil Data
+Close <- ts(BBNIJK[,5])
+head(Close)
+```
+
+## Melakukan differencing 1 terhadap data
+```{r}
+diff1.Close = diff(Close)
+plot.ts(diff1.Close)
+```
+
+Pada output diatas terlihat plot pada differencing 1 berdasarkan data Close. Pada plot di atas terlihat bahwa data masih belum stasioner karena masih terlihat fluktuatif.
+
+## Memanggil lag yang terpilih (Differencing 2 kali)
+```{r}
+diff2.Close = diff(diff1.Close)
+plot.ts(diff2.Close)
+acf2(diff2.Close)
+```
+
+Pada output diatas terlihat plot pada differencing 2 berdasarkan data differencing 1. Pada plot di atas terlihat bahwa data mengalami lonjakan naik turun yang cukup besar.
+
+## EACF
+```{r}
+library(TSA)
+eacf(diff2.Close)
+```
+
+## Kandidat Model
+## 1. ARIMA (0,2,1)
+```{r}
+Close.ARIMA.0.2.1 = arima(Close, order = c(0,2,1))
+Close.ARIMA.0.2.1
+```
+
+## Kandidat Model
+## 2. ARIMA (1,2,2)
+```{r}
+Close.ARIMA.1.2.2 = arima(Close, order = c(1,2,2))
+Close.ARIMA.1.2.2
+```
+
+## Kandidat Model
+## 3. ARIMA (2,2,3)
+```{r}
+Close.ARIMA.2.2.3 = arima(Close, order = c(2,2,3))
+Close.ARIMA.2.2.3
+```
+
+## Kandidat Model
+## 4. ARIMA (1,2,1)
+```{r}
+Close.ARIMA.1.2.1 = arima(Close, order = c(1,2,1))
+Close.ARIMA.1.2.1
+```
+
+## Kandidat Model
+## 5. ARIMA (0,2,2)
+```{r}
+Close.ARIMA.0.2.2 = arima(Close, order = c(0,2,2))
+Close.ARIMA.0.2.2
+```
+
+## Pemilihan Model ARIMA yang Lebih Baik
+Pemilihan model ARIMA berdasarkan nilai AIC yang paling kecil
+
+## Melihat AIC (0,2,1)
+```{r}
+Close.ARIMA.0.2.1$aic
+```
+
+## Melihat AIC (1,2,2)
+```{r}
+Close.ARIMA.1.2.2$aic
+```
+
+## Melihat AIC (2,2,3)
+```{r}
+Close.ARIMA.2.2.3$aic
+```
+
+## Melihat AIC (1,2,1)
+```{r}
+Close.ARIMA.1.2.1$aic
+```
+
+## Melihat AIC (0,2,2)
+```{r}
+Close.ARIMA.0.2.2$aic
+```
+
+```{r}
+Close.ARIMA = c("IMA(2,1)", "ARIMA(1,2,2)", "ARIMA(2,2,3)", "ARIMA(1,2,1)", "IMA(2,2)")
+AIC = c (Close.ARIMA.0.2.1$aic, Close.ARIMA.1.2.2$aic, Close.ARIMA.2.2.3$aic, Close.ARIMA.1.2.1$aic, Close.ARIMA.0.2.2$aic)
+Close.AIC = cbind(Close.ARIMA, AIC)
+Close.AIC
+```
+
+Berdasarkan output di atas terlihat bahwa ARIMA(2,2,3) memiliki nilai AIC lebih baik jika dibandingkan kandidat model lain. 
+
+# Uji Diagnostik
+## Plot Residual
+```{r}
+Close.ARIMA.2.2.3 = arima(Close, order = c(2,2,3))
+Res.Close.ARIMA223 = residuals(Close.ARIMA.2.2.3)
+plot(Res.Close.ARIMA223, ylab = "Residual", type = "o")
+abline(h=0, col = "red")
+```
+
+Pada output di atas terlihat plot residual terstandarkan yang mempermudah kita untuk melihat residual yang tidak wajar. 
+
+## Plot Residual Terstandarkan
+```{r}
+library(TSA)
+Res.Std.Close.ARIMA223 = rstandard(Close.ARIMA.2.2.3)
+plot(Res.Std.Close.ARIMA223, ylab = "Residual Terstandarkan", type = "o")
+abline(h=0, col = "red")
+```
+
+Berdasarkan kedua plot di atas terlihat bahwa tidak terdapat tren pada residual, baik itu residual biasa maupun residual terstandarkan. 
+
+## Plot Kuantil Kenormalan
+```{r}
+qqnorm(Res.Close.ARIMA223)
+qqline(Res.Close.ARIMA223)
+```
+
+Berdasarkan plot kuantil kenormalan terlihat bahwa beberapa titik berada di luar garis kuantil-kuantil. Namun, kita cukup puas bahwa Sebagian besar titik tersebut memenuhi asumsi kenormalan.
+
+## ACF Residual
+Untuk memerika asumsi kebebasan derau (noise), kita bisa memeriksa fungsi autokorelasi sampel residual.
+```{r}
+acf(Res.Close.ARIMA223)
+```
+
+Berdasarkan plot fungsi autokorelasi sampel terlihat bahwa tidak ada yang melewati batas garis putus-putus. Dengan demikian, dapat dikatakan bahwa tidak terdapat autokorelasi pada residual.
+
+## LJung-Box Statistik
+```{r}
+tsdiag(Close.ARIMA.2.2.3, gof.lag =25)
+```
+
+Berdasarkan plot Ljung-Box terlihat bahwa semua p-value berada di atas garis putus-putus (nilai 0.05). Dengan demikian, dapat disimpulkan bahwa model **ARIMA(2,2,3)** baik digunakan untuk memodelkan data BNI.
